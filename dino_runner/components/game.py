@@ -1,10 +1,9 @@
 import pygame
 
 from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
+from dino_runner.utils.text_utils import draw_message_component
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
-
-FONT_STYLE = "freesansbold.ttf"
 
 
 class Game:
@@ -35,6 +34,8 @@ class Game:
     def run(self):
         # Game loop: events - update - draw
         self.playing = True
+        self.game_speed = 20
+        self.score = 0
         self.obstacle_manager.reset_obstacles()
         while self.playing:
             self.events()
@@ -77,11 +78,12 @@ class Game:
         self.x_pos_bg -= self.game_speed
 
     def draw_score(self):
-        font = pygame.font.Font(FONT_STYLE, 22)
-        text = font.render(f"Score: {self.score}", True, (0, 0, 0))
-        text_rect = text.get_rect()
-        text_rect.center = (1000, 50)
-        self.screen.blit(text, text_rect)
+        draw_message_component(
+            f"Score: {self.score}",
+            self.screen,
+            pos_x_center=1000,
+            pos_y_center=50
+        )
 
     def show_menu(self):
         self.screen.fill((255, 255, 255))
@@ -89,13 +91,21 @@ class Game:
         half_screen_width = SCREEN_WIDTH // 2
         
         if self.death_count == 0:
-            font = pygame.font.Font(FONT_STYLE, 22)
-            text = font.render("Press any key to start", True, (0, 0, 0))
-            text_rect = text.get_rect()
-            text_rect.center =  (half_screen_width, half_screen_height)
-            self.screen.blit(text, text_rect)
+           draw_message_component("Press any key to start", self.screen)
         else:
-            self.screen.blit(ICON, (half_screen_width - 20, half_screen_height - 40))
+            draw_message_component("Press any key to restart", self.screen, pos_y_center=half_screen_height + 140)
+            draw_message_component(
+                f"Your Score: {self.score}",
+                self.screen,
+                pos_y_center=half_screen_height - 150
+            )          
+            draw_message_component(
+                f"Death count: {self.death_count}",
+                self.screen,
+                pos_y_center=half_screen_height - 100
+            )
+            self.screen.blit(ICON, (half_screen_width - 40, half_screen_height - 40))
+            
             # TAREFA: CRIAR TELA DE RESTART
             #  CRIAR MÉTODO PARA REMOVER REPETIÇÃO DE CÓDIGO PARA ESCREVER TEXTO
             
